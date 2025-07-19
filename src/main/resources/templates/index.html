@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Spring Test Application</title>
+    <title th:text="${title}">イベント予約システム</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
@@ -30,30 +30,116 @@
         }
         .nav {
             text-align: center;
-            margin-top: 30px;
+            margin: 30px 0;
         }
         .nav a {
             color: #007bff;
             text-decoration: none;
-            margin: 0 15px;
+            margin: 0 10px;
             padding: 10px 20px;
             border: 2px solid #007bff;
             border-radius: 5px;
             transition: all 0.3s;
+            display: inline-block;
         }
         .nav a:hover {
             background-color: #007bff;
             color: white;
         }
+        .events-section {
+            margin-top: 40px;
+        }
+        .events-section h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .event-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .event-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .event-date {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .event-capacity {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .event-actions {
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-right: 10px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .no-events {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 th:text="${title}">Spring Test Application</h1>
-        <div class="message" th:text="${message}">Hello Spring Boot!</div>
+        <h1 th:text="${title}">イベント予約システム</h1>
+        <div class="message" th:text="${message}">イベント予約システムへようこそ!</div>
+        
         <div class="nav">
             <a href="/">ホーム</a>
+            <a href="/events">イベント一覧</a>
+            <a href="/events/available">予約可能イベント</a>
+            <a href="/events/new">イベント作成</a>
             <a href="/about">About</a>
+        </div>
+
+        <div class="events-section">
+            <h2>予約可能な最新イベント</h2>
+            
+            <div th:if="${events != null and !events.empty}">
+                <div th:each="event : ${events}" class="event-card">
+                    <div class="event-title" th:text="${event.title}">イベントタイトル</div>
+                    <div class="event-date">
+                        開催日時: <span th:text="${#temporals.format(event.eventDate, 'yyyy年MM月dd日 HH:mm')}">2024-01-01 10:00</span>
+                    </div>
+                    <div th:text="${event.description}">イベントの説明</div>
+                    <div class="event-capacity">
+                        残り席数: <span th:text="${event.availableSpots}">10</span> / <span th:text="${event.capacity}">50</span>
+                    </div>
+                    <div class="event-actions">
+                        <a th:href="@{/events/{id}(id=${event.id})}" class="btn btn-primary">詳細を見る</a>
+                        <a th:href="@{/bookings/quick-book(eventId=${event.id})}" class="btn btn-success">今すぐ予約</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${events == null or events.empty}" class="no-events">
+                現在予約可能なイベントはありません。
+            </div>
         </div>
     </div>
 </body>
